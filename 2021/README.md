@@ -1,0 +1,1 @@
+The solutions for 2021 are all written in Rust. Run a particular day with `cargo run --release -- [day]`. Most days can be run in debug mode but for some days debug mode is quite slow.
