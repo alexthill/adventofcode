@@ -4,7 +4,7 @@ pub fn solve(input: String) -> (u32, u32) {
     let mut sum1 = 0;
     let mut sum2 = 0;
     
-    for line in input.as_bytes().split(|&c| c == b'\n') {
+    for line in input.trim_end().as_bytes().split(|&c| c == b'\n') {
         let (a, b) = line.split_at(line.len() / 2);
         let mut items_a: u64 = 0;
         let mut items_b: u64 = 0;
