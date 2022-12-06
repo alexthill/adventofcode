@@ -9,25 +9,33 @@ pub fn solve(input: String) -> (u32, u32) {
         let mut items_a: u64 = 0;
         let mut items_b: u64 = 0;
         
-        for (char_a, char_b) in a.iter().copied().zip(b.iter().copied()) {
-            // convert 'a'..='z' to 1..=26 and 'A'..='Z' to 27..=52
-            let pos_a = char_a - 38 - 58 * ((char_a & 32) >> 5);
-            items_a |= 1 << pos_a;
-            
-            let pos_b = char_b - 38 - 58 * ((char_b & 32) >> 5);
-            items_b |= 1 << pos_b;
+        for (&char_a, &char_b) in a.iter().zip(b.iter()) {
+            // this maps 'A' == 65 to bit 1 and 'a' == 97 to bit 33
+            items_a |= 1_u64.overflowing_shl(char_a as u32).0;
+            items_b |= 1_u64.overflowing_shl(char_b as u32).0;
         }
         
-        sum1 += (items_a & items_b).trailing_zeros();
+        sum1 += items_to_score(items_a & items_b);
         items_group &= items_a | items_b;
         
         if i != 2 {
             i += 1;
         } else {
-            sum2 += items_group.trailing_zeros();
+            sum2 += items_to_score(items_group);
             items_group = !0;
             i = 0;
         }
     }
     (sum1, sum2)
+}
+
+fn items_to_score(items: u64) -> u32 {
+    // convert 'a'..='z' to 1..=26 and 'A'..='Z' to 27..=52
+    // 'a' is bit 33 'A' is bit 1
+    let pos = items.trailing_zeros();
+    if pos < 32 {
+        pos + 26
+    } else {
+        pos - 32
+    }
 }
