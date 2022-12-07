@@ -8,7 +8,7 @@ use adventofcode_2022::*;
 
 const SOLUTIONS: [[&'static str; 2]; 25] = [
     ["74198", "209914"], ["9241", "14610"], ["7568", "2780"], ["576", "905"], ["ZRLJGSCTR", "PRTTGRFPB"],
-    ["1640", "3613"], ["", ""], ["", ""], ["", ""], ["", ""],
+    ["1640", "3613"], ["1334506", "7421137"], ["", ""], ["", ""], ["", ""],
     ["", ""], ["", ""], ["", ""], ["", ""], ["", ""],
     ["", ""], ["", ""], ["", ""], ["", ""], ["", ""],
     ["", ""], ["", ""], ["", ""], ["", ""], ["", ""],
@@ -20,7 +20,7 @@ fn main() {
     
     if day == "all" {
         let start = Instant::now();
-        let comp_time: Duration = (1..=6).map(solve_day).sum();
+        let comp_time: Duration = (1..=7).map(solve_day).sum();
         let total_time = start.elapsed();
         println!("========================================");
         println!("took {:?} with i/o and {:?} without", total_time, comp_time);
@@ -43,6 +43,7 @@ fn solve_day(day: u8) -> Duration {
         4 => print_res(day, &start, day04::solve(input)),
         5 => print_res(day, &start, day05::solve(input)),
         6 => print_res(day, &start, day06::solve(input)),
+        7 => print_res(day, &start, day07::solve(input)),
         other => panic!("day {} does not exists", other),
     }
 }
