@@ -1,4 +1,8 @@
-pub fn solve(input: String) -> (u32, u32) {
+use crate::Solution;
+
+pub const SOLUTION: Solution = Solution::U32((7568, 2780));
+
+pub fn solve(input: String) -> Solution {
     let mut items_group: u64 = !0;
     let mut i = 0;
     let mut sum1 = 0;
@@ -26,7 +30,7 @@ pub fn solve(input: String) -> (u32, u32) {
             i = 0;
         }
     }
-    (sum1, sum2)
+    (sum1, sum2).into()
 }
 
 fn items_to_score(items: u64) -> u32 {

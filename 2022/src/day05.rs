@@ -1,6 +1,9 @@
+use crate::Solution;
 use crate::utils::iter_parse_u32;
 
-pub fn solve(input: String) -> (String, String) {
+pub const SOLUTION: Solution = Solution::Str(("ZRLJGSCTR", "PRTTGRFPB"));
+
+pub fn solve(input: String) -> Solution {
     let bytes = input.as_bytes();
     
     let mut line_len = 0;
@@ -59,7 +62,7 @@ pub fn solve(input: String) -> (String, String) {
         }
     }
     
-    (stacks_to_str(stacks), stacks_to_str(stacks2))
+    (stacks_to_str(stacks), stacks_to_str(stacks2)).into()
 }
 
 fn stacks_to_str(stacks: Vec<Vec<u8>>) -> String {

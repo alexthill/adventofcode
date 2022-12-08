@@ -1,62 +1,59 @@
 use std::env;
-use std::fmt::Display;
 use std::fs;
-use std::num::NonZeroU8;
-use std::time::{Duration, Instant};
+use std::io::{stdout, Write};
+use std::time::Instant;
 
-use adventofcode_2022::*;
-
-const SOLUTIONS: [[&'static str; 2]; 25] = [
-    ["74198", "209914"], ["9241", "14610"], ["7568", "2780"], ["576", "905"], ["ZRLJGSCTR", "PRTTGRFPB"],
-    ["1640", "3613"], ["1334506", "7421137"], ["", ""], ["", ""], ["", ""],
-    ["", ""], ["", ""], ["", ""], ["", ""], ["", ""],
-    ["", ""], ["", ""], ["", ""], ["", ""], ["", ""],
-    ["", ""], ["", ""], ["", ""], ["", ""], ["", ""],
-];
+use adventofcode_2022::DAYS;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
     let day = args.get(1).expect("expected one argument");
     
-    if day == "all" {
-        let start = Instant::now();
-        let comp_time: Duration = (1..=7).map(solve_day).sum();
-        let total_time = start.elapsed();
-        println!("========================================");
-        println!("took {:?} with i/o and {:?} without", total_time, comp_time);
+    let range = if day == "all" {
+        0..DAYS.len()
+    } else if let Ok(day) = day.parse::<usize>() {
+        if day == 0 || day > DAYS.len() {
+            println!("There is no day {}. Provide a day between 1 and {} inclusive.", day, DAYS.len());
+            return;
+        }
+        day - 1..day
     } else {
-        let day = day.parse::<NonZeroU8>()
-            .expect("argument must be either `all` or a positive number")
-            .get();
-        solve_day(day);
-    }   
-}
-
-fn solve_day(day: u8) -> Duration {
-    let input = fs::read_to_string(format!("inputs/{:0>2}.txt", day)).unwrap();
+        println!("Please provide as argument 'all' or the specific day you want to run.");
+        return;
+    };
+    
+    print!("reading input files ...");
+    stdout().flush().unwrap();
     let start = Instant::now();
-
-    match day {
-        1 => print_res(day, &start, day01::solve(input)),
-        2 => print_res(day, &start, day02::solve(input)),
-        3 => print_res(day, &start, day03::solve(input)),
-        4 => print_res(day, &start, day04::solve(input)),
-        5 => print_res(day, &start, day05::solve(input)),
-        6 => print_res(day, &start, day06::solve(input)),
-        7 => print_res(day, &start, day07::solve(input)),
-        other => panic!("day {} does not exists", other),
+    let inputs = range.map(|day| (day, fs::read_to_string(format!("inputs/{:0>2}.txt", day + 1)).unwrap())).collect::<Vec<_>>();
+    let time_input = start.elapsed();
+    println!(" took {:?}", time_input);
+    
+    print!("computing solutions ...");
+    stdout().flush().unwrap();
+    let start = Instant::now();
+    let solutions = inputs.into_iter().map(|(day, input)| {
+        let start = Instant::now();
+        let sol = DAYS[day].0(input);
+        let time = start.elapsed();
+        (day, sol, time)
+    }).collect::<Vec<_>>();
+    let time_compute = start.elapsed();
+    println!(" took {:?}", time_compute);
+    
+    println!("printing solutions:");
+    let start = Instant::now();
+    for (day, sol, time) in solutions.into_iter() {
+        println!("- Day {} ({:?}): {}", day + 1, time, sol);
+        let expected = &DAYS[day].1;
+        if &sol != expected {
+            println!("  -> solutions are wrong, schould be: {}", expected);
+        }
     }
-}
-
-fn print_res<T: Display, U: Display>(day: u8, start: &Instant, res: (T, U)) -> Duration {
-    let time = start.elapsed();
-    let res = [res.0.to_string(), res.1.to_string()];
-    let expected = SOLUTIONS[day as usize - 1];
-    println!("solutions for Day {} ({:?}):", day, time);
-    println!(" - part 1: {}", res[0]);
-    println!(" - part 2: {}", res[1]);
-    if res != expected {
-        println!(" - solutions are wrong, schould be: {:?}", expected);
-    }
-    time
+    let time_output = start.elapsed();
+    
+    println!("Timings:");
+    println!("- input: {:?}", time_input);
+    println!("- compute: {:?}", time_compute);
+    println!("- output: {:?}", time_output);
 }

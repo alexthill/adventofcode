@@ -1,5 +1,8 @@
-use crate::utils::iter_parse_u32;
 use std::str;
+use crate::Solution;
+use crate::utils::iter_parse_u32;
+
+pub const SOLUTION: Solution = Solution::U32((1334506, 7421137));
 
 struct FileSystem {
     dirs: Vec<Dir>,
@@ -98,7 +101,7 @@ impl Dir {
     }
 }
 
-pub fn solve(input: String) -> (u32, u32) {
+pub fn solve(input: String) -> Solution {
     let mut file_system = FileSystem::new();
     let mut total_size = 0;
     let mut sub_dir_count = 0;
@@ -156,6 +159,8 @@ pub fn solve(input: String) -> (u32, u32) {
     let free = 70000000_u32.checked_sub(total_size).unwrap();
     let needed = 30000000_u32.checked_sub(free).unwrap();
     let mut buf = Vec::new();
+    let x = file_system.sum_small_dirs(100000, &mut buf);
+    let y = file_system.find_smallest_with_at_least(needed, &mut buf);
     
-    (file_system.sum_small_dirs(100000, &mut buf), file_system.find_smallest_with_at_least(needed, &mut buf))
+    (x, y).into()
 }

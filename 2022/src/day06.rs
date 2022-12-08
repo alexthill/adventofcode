@@ -1,9 +1,13 @@
-pub fn solve(input: String) -> (u32, u32) {
+use crate::Solution;
+
+pub const SOLUTION: Solution = Solution::U32((1640, 3613));
+
+pub fn solve(input: String) -> Solution {
     let input = input.as_bytes();
     let x = solve_for_window_len::<4>(&input);
     let y = solve_for_window_len::<14>(&input[x - 4..]) + x - 4;
     
-    (x as u32, y as u32)
+    (x as u32, y as u32).into()
 }
 
 pub fn solve_for_window_len<const N: usize>(input: &[u8]) -> usize {
