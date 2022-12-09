@@ -62,6 +62,44 @@ pub fn solve(input: String) -> Solution {
         }
     }
     
+    // let mut scenic_map = Vec::new();
+    // scenic_map.resize(map_h * map_w, 1);
+    // for i in 1..map_h - 1 {
+        // let mut views = [0; 10];
+        // for j in 1..map_w - 1 {
+            // let h = (map[i][j] - b'0') as usize;
+            // let blocker = views[h..].iter().max().unwrap();
+            // scenic_map[i * map_w + j] *= j - blocker;
+            // views[h] = j;
+        // }
+        
+        // let mut views = [map_w - 1; 10];
+        // for j in (1..map_w - 1).rev() {
+            // let h = (map[i][j] - b'0') as usize;
+            // let blocker = views[h..].iter().min().unwrap();
+            // scenic_map[i * map_w + j] *= blocker - j;
+            // views[h] = j;
+        // }
+    // }
+    // for j in 1..map_w - 1 {
+        // let mut views = [0; 10];
+        // for i in 1..map_h - 1 {
+            // let h = (map[i][j] - b'0') as usize;
+            // let blocker = views[h..].iter().max().unwrap();
+            // scenic_map[i * map_w + j] *= i - blocker;
+            // views[h] = i;
+        // }
+        
+        // let mut views = [map_h - 1; 10];
+        // for i in (1..map_h - 1).rev() {
+            // let h = (map[i][j] - b'0') as usize;
+            // let blocker = views[h..].iter().min().unwrap();
+            // scenic_map[i * map_w + j] *= blocker - i;
+            // views[h] = i;
+        // }
+    // }
+    // let best_scenic = *scenic_map.iter().max().unwrap();
+    
     let mut best_scenic = 0;
     for i in 1..map_h - 1 {        
         for j in 1..map_w - 1 {
