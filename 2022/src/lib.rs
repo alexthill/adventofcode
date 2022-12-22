@@ -22,8 +22,9 @@ mod day18;
 mod day19;
 mod day20;
 mod day21;
+mod day22;
 
-pub const DAYS: [(fn(String) -> Solution, Solution); 21] = [
+pub const DAYS: [(fn(String) -> Solution, Solution); 22] = [
     (day01::solve, day01::SOLUTION),
     (day02::solve, day02::SOLUTION),
     (day03::solve, day03::SOLUTION),
@@ -45,6 +46,7 @@ pub const DAYS: [(fn(String) -> Solution, Solution); 21] = [
     (day19::solve, day19::SOLUTION),
     (day20::solve, day20::SOLUTION),
     (day21::solve, day21::SOLUTION),
+    (day22::solve, day22::SOLUTION),
 ];
 
 #[derive(Clone, Debug)]
