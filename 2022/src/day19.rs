@@ -37,7 +37,6 @@ pub fn solve(input: String) -> Solution {
         blueprints.push(Blueprint { id, ore_ore, clay_ore, obs_ore, obs_clay, geod_ore, geod_obs });
     }
     
-    println!("");
     let mut res1 = 0;
     for bp in blueprints.iter() {
         let max_ore_need = bp.ore_ore.max(bp.clay_ore.max(bp.obs_ore.max(bp.geod_ore)));
