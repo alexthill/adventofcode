@@ -11,15 +11,14 @@ solve(Sum, Poss) :-
     read_file_to_lines_string('../inputs/day19.txt', Lines),
     foldl(parse, Lines, 0-[]-[], 1-RS0-PS),
     list_to_assoc(RS0, RS),
-    maplist(apply_rules(RS, "in"), PS, Acc),
-    foldl(sum_acc, Acc, PS, 0, Sum),
+    include(apply_rules(RS, "in"), PS, Acc),
+    foldl(sum_acc, Acc, 0, Sum),
     apply_rules2(RS, "in", part{x:1-4000, m:1-4000, a:1-4000, s:1-4000}, APS0),
-    flatten(APS0, APS), foldl(sum_acc2, APS, 0, Poss).
+    flatten(APS0, APS), foldl(sum_poss, APS, 0, Poss).
 
-sum_acc(false, _, V, V).
-sum_acc(true, P, V0, V) :- V is V0 + P.x + P.m + P.a + P.s.
+sum_acc(P, V0, V) :- V is V0 + P.x + P.m + P.a + P.s.
 
-sum_acc2(P, V0, V) :- foldl(part_poss(P), [x,m,a,s], 1, Poss), V is V0 + Poss.
+sum_poss(P, V0, V) :- foldl(part_poss(P), [x,m,a,s], 1, Poss), V is V0 + Poss.
 
 part_poss(_, [], V, V).
 part_poss(P, C, V0, V) :- get_dict(C, P, Min-Max), V is V0 * (Max - Min + 1).
@@ -40,9 +39,9 @@ parse_rule([A,B|XS], [C-lt-V-B|YS]) :-
 
 str_to_pair(S, A-B) :- split_string(S, "=", "", [A0,B0]), atom_string(A, A0), number_string(B, B0).
 
-apply_rules(RS, RN, P, Status) :-
-    get_assoc(RN, RS, R), apply_rule(R, P, Res),
-    (Res = "A" -> Status = true ; (Res = "R" -> Status = false ; atom_string(Res, RN1), apply_rules(RS, RN1, P, Status))).
+apply_rules(RS, RN, P) :-
+    get_assoc(RN, RS, R), apply_rule(R, P, Res), !, Res \= "R",
+    (Res = "A" ; atom_string(Res, RN1), apply_rules(RS, RN1, P)).
 
 apply_rule([C-lt-V-RN|_], P, RN) :- P.C < V.
 apply_rule([C-gt-V-RN|_], P, RN) :- P.C > V.
@@ -50,10 +49,10 @@ apply_rule([_|XS], P, RN) :- apply_rule(XS, P, RN).
 apply_rule([X], _, X).
 
 apply_rules2(RS, RN, P, Status) :-
-    get_assoc(RN, RS, R), apply_rule2(R, P, Res), maplist(check_status(RS), Res, Status).
+    get_assoc(RN, RS, R), apply_rule2(R, P, Res), convlist(check_status(RS), Res, Status).
     
 check_status(RS, P-RN, Status) :-
-    (RN = "A" -> Status = [P] ; (RN = "R" -> Status = [] ; atom_string(RN, RN1), apply_rules2(RS, RN1, P, Status))).
+    RN \= "R", (RN = "A" -> Status = P ; atom_string(RN, RN1), apply_rules2(RS, RN1, P, Status)).
 
 apply_rule2([C-lt-V-RN|_], P, [P-RN]) :- get_dict(C, P, _-Max), Max < V.
 apply_rule2([C-lt-V-_|XS], P, YS) :- get_dict(C, P, Min-_), Min > V, apply_rule(XS, P, YS).
