@@ -5,8 +5,6 @@ main :-
     writeln(P1), writeln(P2),
     solutions(P1, P2).
 
-% The solution calculated for Part 2 is actually 1365 and slightly of.
-% But I cannot figure out the problem.
 solutions(1238, 1362).
 
 solve(Len, Len2) :-
@@ -16,9 +14,10 @@ solve(Len, Len2) :-
 
 find_shortest_path(Lines, Min-Max, Len) :-
     fold_grid(fold_cell(Max), Lines, [], MapList),
-    list_to_assoc([1-1-r-0-(0-0)|MapList], Map0),
+    list_to_assoc([1-1-r-0-(0-0),1-1-d-0-(0-0)|MapList], Map0),
     grid_size(Lines, W, H),
-    singleton_heap(Heap0, 0, 1-1-r-0), process_next_min(W-H, Min-Max, Map0, Heap0, Map, _),
+    list_to_heap([0-(1-1-r-0), 0-(1-1-d-0)], Heap0),
+    process_next_min(W-H, Min-Max, Map0, Heap0, Map, _),
     findall(X, (gen_assoc(W-H-_-N, Map, _-X), N >= Min), XS), min_list(XS, Len).
 
 fold_cell(Max, Pos, V0, C, V) :- numlist(1, Max, Nums), cartesian([u,r,d,l], Nums, CP), foldl(add_cell_entry(Pos, C), CP, V0, V).
