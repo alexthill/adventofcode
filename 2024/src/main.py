@@ -6,6 +6,7 @@ from day01 import day01
 from day02 import day02
 from day03 import day03
 from day04 import day04
+from day05 import day05
 
 def main():
     if len(sys.argv) != 2:
@@ -28,6 +29,9 @@ def main():
         case 4:
             with open(file_prefix + "day04.txt") as file:
                 part1, part2 = day04(file)
+        case 5:
+            with open(file_prefix + "day05.txt") as file:
+                part1, part2 = day05(file)
         case _:
             print(f"no solution for day {day}")
             return
