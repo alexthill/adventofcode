@@ -11,6 +11,7 @@ from day05 import day05
 from day06 import day06
 from day07 import day07
 from day08 import day08
+from day09 import day09
 
 def main():
     if len(sys.argv) < 2:
@@ -33,7 +34,7 @@ def main():
         print(f"failed to open file '{file_name}'")
         return
 
-    print(f"solving day {day} ...", end="")
+    print(f"solving day {day} ...")
     start_time = time.time()
     match day:
         case 1: part1, part2 = day01(file)
@@ -44,11 +45,12 @@ def main():
         case 6: part1, part2 = day06(file)
         case 7: part1, part2 = day07(file)
         case 8: part1, part2 = day08(file)
+        case 9: part1, part2 = day09(file)
         case _:
             print(f"no solution for day {day}")
             return
     duration = round(time.time() - start_time, 3)
-    print(f" took {duration} seconds")
+    print(f"... took {duration} seconds")
     print(f"> part 1: {part1}")
     print(f"> part 2: {part2}")
 
