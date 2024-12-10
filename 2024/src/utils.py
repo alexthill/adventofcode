@@ -13,3 +13,6 @@ def get_numbers(s):
     if num is not None:
         numbers.append(num)
     return numbers
+
+def get_digits(s):
+    return [int(c) for c in s if c.isdigit()]
