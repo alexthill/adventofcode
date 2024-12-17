@@ -91,7 +91,7 @@ def day14(file, example):
             biggest = biggest_cluster(m, w, h)
             max_biggest = max(biggest, max_biggest)
             if biggest > len(robots) // 4:
-                print_map(m, w, h)
+                #print_map(m, w, h)
                 break
         sol2 = i + 101
 
