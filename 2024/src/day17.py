@@ -89,7 +89,9 @@ def day17(file):
         for i in range(0, 8):
             ra = sol2 + 8**e * i
             out = run_prog(ra, rb, rc, prog)
+            print(out)
             if out[e] == prog[e]:
+            
                 sol2 = ra
                 break
     out = run_prog(sol2, rb, rc, prog)

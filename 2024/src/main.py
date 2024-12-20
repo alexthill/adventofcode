@@ -22,6 +22,7 @@ from day16 import day16
 from day17 import day17
 from day18 import day18
 from day19 import day19
+from day20 import day20
 
 def main():
     if len(sys.argv) < 2:
@@ -33,10 +34,11 @@ def main():
     flags = {}
     for flag in sys.argv[2:]:
         flags[flag] = True
+    is_example = "-e" in flags
 
     day = int(sys.argv[1])
     zero = "0" if day < 10 else ""
-    example = "_example" if "-e" in flags else ""
+    example = "_example" if is_example else ""
     file_name = f"../inputs/day{zero}{day}{example}.txt"
     try:
         file = open(file_name, "r")
@@ -60,12 +62,13 @@ def main():
         case 11: part1, part2 = day11(file)
         case 12: part1, part2 = day12(file)
         case 13: part1, part2 = day13(file)
-        case 14: part1, part2 = day14(file, len(example) != 0)
+        case 14: part1, part2 = day14(file, is_example)
         case 15: part1, part2 = day15(file)
         case 16: part1, part2 = day16(file)
         case 17: part1, part2 = day17(file)
-        case 18: part1, part2 = day18(file, len(example) != 0)
+        case 18: part1, part2 = day18(file, is_example)
         case 19: part1, part2 = day19(file)
+        case 20: part1, part2 = day20(file, is_example)
         case _:
             print(f"no solution for day {day}")
             return
