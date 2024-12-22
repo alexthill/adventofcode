@@ -24,6 +24,7 @@ from day18 import day18
 from day19 import day19
 from day20 import day20
 from day21 import day21
+from day22 import day22
 
 def main():
     if len(sys.argv) < 2:
@@ -71,6 +72,7 @@ def main():
         case 19: part1, part2 = day19(file)
         case 20: part1, part2 = day20(file, is_example)
         case 21: part1, part2 = day21(file)
+        case 22: part1, part2 = day22(file)
         case _:
             print(f"no solution for day {day}")
             return
