@@ -28,10 +28,16 @@ all_nums_neg([C|CS], N0, NS) :- N is N0 * 10 + (C - 48), all_nums_neg(CS, N, NS)
 
 % Takes a list of equal length lists (= 2d array = grid) and folds all members together.
 % The fold function gets the member value and its x-y-position in the grid starting from 1-1
-fold_grid(Fn, Rows, V0, V) :- fold_grid(Fn, Rows, 1, 1, V0, V).
-fold_grid(_, [], _, _, V, V).
-fold_grid(Fn, [[]|CS], _, Y, V0, V) :- succ(Y, Y1), fold_grid(Fn, CS, 1, Y1, V0, V).
-fold_grid(Fn, [[C|CS]|CSS], X, Y, V0, V) :- succ(X, X1), call(Fn, X-Y, V0, C, V1), fold_grid(Fn, [CS|CSS], X1, Y, V1, V).
+fold_grid(Fn, Rows, V0, V) :- fold_grid_(Fn, Rows, 1, 1, V0, V).
+fold_grid_(_, [], _, _, V, V).
+fold_grid_(Fn, [[]|CS], _, Y, V0, V) :- succ(Y, Y1), fold_grid_(Fn, CS, 1, Y1, V0, V).
+fold_grid_(Fn, [[C|CS]|CSS], X, Y, V0, V) :- succ(X, X1), call(Fn, X-Y, V0, C, V1), fold_grid_(Fn, [CS|CSS], X1, Y, V1, V).
 
 % Calculates the dimensions of a list of equal length lists (= 2d array = grid)
 grid_size([R|RS], W, H) :- length(R, W), length([R|RS], H).
+
+clauseX(H,B) :-
+    absolute_file_name('utils.pl', AbsFileName),
+    predicate_property(H, file(AbsFileName)),
+    clause(H,B).
+

@@ -5,62 +5,72 @@ main :-
     writeln(P1), writeln(P2),
     solutions(P1, P2).
 
-solutions(6828, _).
+solutions(6828, 459).
 
-solve(PathLen, InCount) :-
+solve(MaxDist, InCount) :-
     read_file_to_lines_codes('../inputs/day10.txt', Lines),
-    fold_grid(iter_cell, Lines, [], Cells),
-    list_to_assoc(Cells, GA),
-    map_s(GA, Cells, [S,A,B]),
-    find_path(GA, S, A, S, B, PathLen, Path),
-    list_to_ord_set([S|Path], PathOrd),
-    include(cell_is_in(PathOrd, GA), Cells, In),
-    %writeln(In),
-    length(In, InCount).
+    fold_grid(fold_cell, Lines, [], Cells),
+    list_to_assoc(Cells, Grid),
+    find_start_adj(Grid, Cells, S-A-_),
+    find_path(Grid, S, S, A, Path),
+    length(Path, PathLen), MaxDist is PathLen // 2,
+    sort(Path, PathOrd),
+    count_ins(Lines, 1, PathOrd, InCounts),
+    sum_list(InCounts, InCount).
 
-fold_grid(Fn, [R|RS], V0, V) :- length(R, W), length([R|RS], H), fold_grid(Fn, [R|RS], W, H, W, H, V0, V).
-fold_grid(_, [], _, _, _, _, V0, V0).
-fold_grid(Fn, [[]|CS], W, H, _, Y, V0, V) :- succ(Y0, Y), fold_grid(Fn, CS, W, H, W, Y0, V0, V).
-fold_grid(Fn, [[C|CS]|CSS], W, H, X, Y, V0, V) :- succ(X0, X), call(Fn, C, [Y,X], V1, V), fold_grid(Fn, [CS|CSS], W, H, X0, Y, V0, V1).
+% Part 2 %
 
-iter_cell(C, Pos, V, [Pos-Adjs|V]) :- cell_adjs(C, Pos, Adjs).
-cell_adjs(0'|, [Y,X], [[Y0,X],[Y1,X]]) :- succ(Y0, Y), succ(Y, Y1).
-cell_adjs(0'-, [Y,X], [[Y,X0],[Y,X1]]) :- succ(X0, X), succ(X, X1).
-cell_adjs(0'L, [Y,X], [[Y1,X],[Y,X0]]) :- succ(X0, X), succ(Y, Y1).
-cell_adjs(0'J, [Y,X], [[Y1,X],[Y,X1]]) :- succ(X, X1), succ(Y, Y1).
-cell_adjs(0'F, [Y,X], [[Y0,X],[Y,X0]]) :- succ(X0, X), succ(Y0, Y).
-cell_adjs(0'7, [Y,X], [[Y0,X],[Y,X1]]) :- succ(X, X1), succ(Y0, Y).
-cell_adjs(0'., _, 0'.).
-cell_adjs(0'S, _, 0'S).
+count_ins([], _, _, []).
+count_ins([L|Ls], Y, Path, [N|Ns]) :-
+    count_in(L, 1-Y, Path, 0, N),
+    succ(Y, Y1),
+    count_ins(Ls, Y1, Path, Ns).
 
-map_s(_, [], []).
-map_s(GA, [[Y,X]-0'S|_], [[Y,X],A,B]) :-
-    cell_adjs(_, [Y,X], [A,B]),
-    (get_assoc(A, GA, [[Y,X],_]); get_assoc(A, GA, [_,[Y,X]])),
-    (get_assoc(B, GA, [[Y,X],_]); get_assoc(B, GA, [_,[Y,X]])),
-    dif(A,B).
-map_s(GA, [_|XS], S) :- map_s(GA, XS, S).
+count_in([], _, _, _, 0).
+count_in([C|Cs], X-Y, Path, I, N) :-
+    ord_memberchk(X-Y, Path),
+    update_intersection_count(C, I, I1),
+    succ(X, X1),
+    count_in(Cs, X1-Y, Path, I1, N).
+count_in([_|Cs], X-Y, Path, I, N) :-
+    0 =:= I mod 2,
+    succ(X, X1),
+    count_in(Cs, X1-Y, Path, I, N).
+count_in([_|Cs], X-Y, Path, I, N) :-
+    succ(X, X1),
+    count_in(Cs, X1-Y, Path, I, N0),
+    succ(N0, N).
 
-find_path(_, _, A, _, A, 1, [A]).
-find_path(_, A0, A, A, A0, 0, []).
-find_path(GA, A0, A, B0, B, N, [A,B|PS]) :-
-    (get_assoc(A, GA, [A0,A1]); get_assoc(A, GA, [A1,A0])),
-    (get_assoc(B, GA, [B0,B1]); get_assoc(B, GA, [B1,B0])),
-    find_path(GA, A, A1, B, B1, N0, PS), succ(N0, N).
+update_intersection_count(0'|, N, N1) :- succ(N, N1).
+update_intersection_count(0'F, N, N1) :- succ(N, N1).
+update_intersection_count(0'7, N, N1) :- succ(N, N1).
+% uncomment the next line if S is in a F or 7 position and not L or J
+% update_intersection_count(0'S, N, N1) :- succ(N, N1).
+update_intersection_count(_, N, N).
 
-count_intersections(_, _, [_,0], 0).
-count_intersections(P, GA, [Y,X], N) :-
-    ord_memberchk([Y,X], P),
-    succ(X0, X), count_intersections(P, GA, [Y,X0], N0),
-    cell_inter_val(GA, [Y,X], V), N is N0 + V.
-count_intersections(P, GA, [Y,X], N) :- succ(X0, X), count_intersections(P, GA, [Y,X0], N).
 
-cell_inter_val(GA, C, N) :- get_assoc(C, GA, Adjs), cell_adjs(T, C, Adjs), cell_inter_val(T, N).
-cell_inter_val(0'|, 1).
-cell_inter_val(0'L, 1).
-cell_inter_val(0'J, 1).
-cell_inter_val(_, 0).
+% Part 1 %
 
-cell_is_in(P, GA, C-_) :- \+ ord_memberchk(C, P), count_intersections(P, GA, C, N), !, 1 =:= N mod 2.
+find_path(_, S, A, S, [A]).
+find_path(Grid, S, A0, A, [A0|Path]) :-
+    (get_assoc(A, Grid, [A0,A1]); get_assoc(A, Grid, [A1,A0])),
+    find_path(Grid, S, A, A1, Path).
 
-% 460 high
+find_start_adj(_, [], _) :- writeln('No Start found').
+find_start_adj(Grid, [S-0'S|_], S-A-B) :-
+    cell_adj(_, S, [A,B]),
+    (get_assoc(A, Grid, [S,_]); get_assoc(A, Grid, [_,S])),
+    (get_assoc(B, Grid, [S,_]); get_assoc(B, Grid, [_,S])),
+    dif(A, B).
+find_start_adj(Grid, [_|Cells], S) :- find_start_adj(Grid, Cells, S).
+
+fold_cell(Pos, V, C, [Pos-Adjs|V]) :- cell_adj(C, Pos, Adjs).
+fold_cell(_, V, _, V).
+
+cell_adj(0'|, X-Y, [X-Y0,X-Y1]) :- succ(Y0, Y), succ(Y, Y1).
+cell_adj(0'-, X-Y, [X0-Y,X1-Y]) :- succ(X0, X), succ(X, X1).
+cell_adj(0'L, X-Y, [X-Y0,X1-Y]) :- succ(X, X1), succ(Y0, Y).
+cell_adj(0'J, X-Y, [X0-Y,X-Y0]) :- succ(X0, X), succ(Y0, Y).
+cell_adj(0'F, X-Y, [X1-Y,X-Y1]) :- succ(X, X1), succ(Y, Y1).
+cell_adj(0'7, X-Y, [X0-Y,X-Y1]) :- succ(X0, X), succ(Y, Y1).
+cell_adj(0'S, _, 0'S).
