@@ -79,6 +79,12 @@ pub trait Year {
         let path = format!("{}/{file_name}", Self::INPUT_DIR);
         println!("\treading {path}");
         let input = fs::read_to_string(path)?;
+        let bytes = input.as_bytes();
+        let input = if bytes[bytes.len() - 1] == b'\n' {
+            &input[..input.len() - 1]
+        } else {
+            &input[..]
+        };
 
         let start = Instant::now();
         let sol = D::solve(&input);

@@ -1,4 +1,5 @@
 mod day01;
+mod day02;
 
 use aoc_lib_rust::{DayNone, Year};
 
@@ -8,7 +9,7 @@ impl Year for Year2020 {
     const INPUT_DIR: &'static str = "inputs";
 
     type Day01 = day01::Day01;
-    type Day02 = DayNone;
+    type Day02 = day02::Day02;
     type Day03 = DayNone;
     type Day04 = DayNone;
     type Day05 = DayNone;
