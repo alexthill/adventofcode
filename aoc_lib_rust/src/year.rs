@@ -80,7 +80,7 @@ pub trait Year {
         println!("\treading {path}");
         let input = fs::read_to_string(path)?;
         let bytes = input.as_bytes();
-        let input = if bytes[bytes.len() - 1] == b'\n' {
+        let input = if !bytes.is_empty() && bytes[bytes.len() - 1] == b'\n' {
             &input[..input.len() - 1]
         } else {
             &input[..]
