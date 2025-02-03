@@ -1,9 +1,8 @@
-mod year2020;
-
+use adventofcode_2020::Year2020;
 use aoc_lib_rust::Year;
 use std::env;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    year2020::Year2020::solve(args.get(1).map(|x| x.as_str()));
+    let args = env::args().collect::<Vec<_>>();
+    Year2020::solve(&args);
 }

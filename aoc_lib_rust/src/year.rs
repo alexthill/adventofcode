@@ -33,8 +33,8 @@ pub trait Year {
 
     const INPUT_DIR: &'static str;
 
-    fn solve(day: Option<&str>) -> bool {
-        let Some(day) = day else {
+    fn solve(args: &[String]) -> bool {
+        let Some(day) = args.get(1) else {
             eprintln!("Please provide the day you want to run or 'all'.");
             return false;
         };

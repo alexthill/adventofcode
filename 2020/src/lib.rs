@@ -5,6 +5,7 @@ mod day03;
 use aoc_lib_rust::{DayNone, Year};
 
 pub struct Year2020;
+
 impl Year for Year2020 {
 
     const INPUT_DIR: &'static str = "inputs";
