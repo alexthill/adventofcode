@@ -46,5 +46,3 @@ impl Day for Day03 {
         },
     ];
 }
-
-

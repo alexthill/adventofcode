@@ -18,5 +18,3 @@ impl Day for Day25 {
         },
     ];
 }
-
-

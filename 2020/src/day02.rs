@@ -35,4 +35,3 @@ impl Day for Day02 {
         },
     ];
 }
-
