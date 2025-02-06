@@ -87,7 +87,7 @@ pub trait Year {
         };
 
         let start = Instant::now();
-        let sol = D::solve(&input);
+        let sol = D::solve2(&input, false);
         let time = start.elapsed();
 
         println!("\ttime: {time:?}");

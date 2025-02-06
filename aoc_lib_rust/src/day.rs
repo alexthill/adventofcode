@@ -14,13 +14,17 @@ pub trait Day {
     const EXAMPLES: &'static [Example] = &[];
     const DAY_NONE: bool = false;
 
+    fn solve2(input: &str, _is_example: bool) -> [Solution; 2] {
+        Self::solve(input)
+    }
+
     fn solve(_input: &str) -> [Solution; 2] {
         [Solution::None, Solution::None]
     }
 
     fn check_examples() -> Result<(), ExampleError> {
         for example in Self::EXAMPLES.iter() {
-            let mut sol = Self::solve(example.input);
+            let mut sol = Self::solve2(example.input, true);
             for (expected, found) in example.solution.iter().zip(sol.iter_mut()) {
                 if *expected == Solution::None {
                     *found = Solution::None;
