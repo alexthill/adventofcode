@@ -4,6 +4,7 @@ use std::collections::{HashMap, HashSet};
 pub struct Day17;
 
 impl Day17 {
+    #[allow(dead_code)]
     fn print_cube(cube: &HashSet<(i32, i32, i32)>) {
         let mut x_min = i32::MAX;
         let mut y_min = i32::MAX;
