@@ -50,6 +50,12 @@ impl From<u64> for Solution {
     }
 }
 
+impl From<usize> for Solution {
+    fn from(value: usize) -> Self {
+        Self::U64(value as _)
+    }
+}
+
 impl From<&'static str> for Solution {
     fn from(value: &'static str) -> Self {
         Self::Str(value)
