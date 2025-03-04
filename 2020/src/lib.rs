@@ -17,6 +17,7 @@ mod day16;
 mod day17;
 mod day18;
 mod day19;
+mod day20;
 
 use aoc_lib_rust::{DayNone, Year};
 
@@ -45,7 +46,7 @@ impl Year for Year2020 {
     type Day17 = day17::Day17;
     type Day18 = day18::Day18;
     type Day19 = day19::Day19;
-    type Day20 = DayNone;
+    type Day20 = day20::Day20;
     type Day21 = DayNone;
     type Day22 = DayNone;
     type Day23 = DayNone;
