@@ -14,8 +14,8 @@ impl fmt::Display for Solution {
         match self {
             Self::U32(sol)       => write!(f, "{sol}"),
             Self::U64(sol)       => write!(f, "{sol}"),
-            Self::Str(sol)       => write!(f, "{sol}"),
-            Self::String(sol)    => write!(f, "{sol}"),
+            Self::Str(sol)       => write!(f, "{sol:?}"),
+            Self::String(sol)    => write!(f, "{sol:?}"),
             Self::None           => write!(f, "No Solution"),
         }
     }
