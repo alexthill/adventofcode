@@ -30,6 +30,7 @@ pub struct Year2020;
 
 impl Year for Year2020 {
 
+    const YEAR: u16 = 2020;
     const INPUT_DIR: &'static str = "inputs";
 
     type Day01 = day01::Day01;
