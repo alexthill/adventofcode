@@ -11,5 +11,10 @@ impl Day for Day25 {
         [Solution::None, Solution::None]
     }
 
-    const EXAMPLES: &'static [Example] = &[];
+    const EXAMPLES: &'static [Example] = &[
+        Example {
+            solution: [Solution::None, Solution::None],
+            input: "",
+        },
+    ];
 }

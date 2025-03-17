@@ -1,5 +1,7 @@
 use aoc_lib_rust::Year;
 
+mod day01;
+
 pub struct Year2019;
 
 impl Year for Year2019 {
@@ -7,7 +9,7 @@ impl Year for Year2019 {
     const YEAR: u16 = 2019;
     const INPUT_DIR: &'static str = "inputs";
 
-    type Day01 = aoc_lib_rust::DayNone;
+    type Day01 = day01::Day01;
     type Day02 = aoc_lib_rust::DayNone;
     type Day03 = aoc_lib_rust::DayNone;
     type Day04 = aoc_lib_rust::DayNone;
