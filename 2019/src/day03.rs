@@ -52,7 +52,7 @@ impl Day for Day03 {
                 pos.1 += dir.1;
                 time += 1;
                 if let Some(time1) = wire.get(&pos) {
-                    sol1 = sol1.min(pos.0.abs() as u32 + pos.1.abs() as u32);
+                    sol1 = sol1.min(pos.0.unsigned_abs() + pos.1.unsigned_abs());
                     sol2 = sol2.min(*time1 + time);
                 }
             }
