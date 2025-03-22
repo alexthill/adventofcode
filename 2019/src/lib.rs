@@ -2,6 +2,7 @@ use aoc_lib_rust::Year;
 
 mod day01;
 mod day02;
+mod day03;
 
 pub struct Year2019;
 
@@ -12,7 +13,7 @@ impl Year for Year2019 {
 
     type Day01 = day01::Day01;
     type Day02 = day02::Day02;
-    type Day03 = aoc_lib_rust::DayNone;
+    type Day03 = day03::Day03;
     type Day04 = aoc_lib_rust::DayNone;
     type Day05 = aoc_lib_rust::DayNone;
     type Day06 = aoc_lib_rust::DayNone;
