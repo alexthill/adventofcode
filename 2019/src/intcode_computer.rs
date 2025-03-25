@@ -30,10 +30,6 @@ impl Comp {
         self.input.push_back(input);
     }
 
-    pub fn into_prog(self) -> Vec<i64> {
-        self.prog
-    }
-
     pub fn exec(&mut self) {
         assert!(!self.halted);
 
