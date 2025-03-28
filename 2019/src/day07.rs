@@ -9,9 +9,7 @@ impl Day for Day07 {
     const PART2: Solution = Solution::U32(58285150);
 
     fn solve(input: &str) -> [Solution; 2] {
-        let prog = input.split(',')
-            .map(|s| s.parse::<i64>().expect(s))
-            .collect::<Vec<_>>();
+        let prog = Comp::parse_prog(input);
 
         fn run1(prog: &[i64], phases: &mut Vec<i64>, input: i64) -> i64 {
             let mut max = i64::MIN;

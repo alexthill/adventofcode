@@ -9,10 +9,7 @@ impl Day for Day05 {
     const PART2: Solution = Solution::U64(8834787);
 
     fn solve(input: &str) -> [Solution; 2] {
-        let prog = input.split(',')
-            .map(|s| s.parse::<i64>().unwrap())
-            .collect::<Vec<_>>();
-
+        let prog = Comp::parse_prog(input);
         let sol1 = Comp::new(prog.clone(), [1]).run_to_halt().unwrap() as _;
 
         let mut comp = Comp::new(prog, [5]);
