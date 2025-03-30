@@ -50,7 +50,7 @@ impl Comp {
                 }
                 4 => {
                     let addr = self.get_addr(self.prog[self.ic] / 100, 1);
-                    self.output = Some(self.prog[addr as usize]);
+                    self.output = Some(self.prog[addr]);
                     self.ic += 2;
                     break;
                 }
@@ -103,7 +103,7 @@ impl Comp {
         args.map(|idx| {
             let addr = self.get_addr(op % 10, idx);
             op /= 10;
-            self.prog[addr]
+            self.prog.get(addr).copied().unwrap_or(0)
         })
     }
 
