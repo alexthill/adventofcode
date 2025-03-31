@@ -1,6 +1,7 @@
 mod cli;
 mod day;
 mod solution;
+pub mod utils;
 mod year;
 
 pub use cli::{cli, cli_print};
