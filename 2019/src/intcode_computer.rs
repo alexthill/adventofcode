@@ -1,5 +1,11 @@
 use std::collections::VecDeque;
 
+pub enum Interrupt {
+    Output(i64),
+    Input,
+    Halt,
+}
+
 #[derive(Default)]
 pub struct Comp {
     prog: Vec<i64>,
@@ -37,22 +43,26 @@ impl Comp {
         self.input.push_back(input);
     }
 
-    pub fn exec(&mut self) {
-        assert!(!self.halted);
+    pub fn exec(&mut self) -> Interrupt {
+        if self.halted {
+            return Interrupt::Halt;
+        }
 
         loop {
             self.ic += match self.prog[self.ic] % 100 {
                 1 => self.write(3, self.args([1, 2]).iter().sum()),
                 2 => self.write(3, self.args([1, 2]).iter().product()),
                 3 => {
-                    let value = self.input.pop_front().unwrap();
+                    let Some(value) = self.input.pop_front() else {
+                        break Interrupt::Input;
+                    };
                     self.write(1, value)
                 }
                 4 => {
                     let addr = self.get_addr(self.prog[self.ic] / 100, 1);
                     self.output = Some(self.prog[addr]);
                     self.ic += 2;
-                    break;
+                    break Interrupt::Output(self.prog[addr]);
                 }
                 5 => match self.args([1, 2]) {
                     [0, _] => 3,
@@ -70,7 +80,7 @@ impl Comp {
                 }
                 99 => {
                     self.halted = true;
-                    break;
+                    break Interrupt::Halt;
                 }
                 _ => unreachable!(),
             };

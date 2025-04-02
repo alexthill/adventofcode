@@ -111,7 +111,7 @@ pub struct MockYear;
 
 impl Year for MockYear {
     const YEAR: u16 = 2015;
-    const INPUT_DIR: &str = "mock_inputs";
+    const INPUT_DIR: &'static str = "mock_inputs";
 
     type Day01 = crate::DayNone;
     type Day02 = crate::DayNone;
