@@ -43,6 +43,14 @@ impl Comp {
         self.input.push_back(input);
     }
 
+    pub fn extend_input<T, I>(&mut self, input: T)
+    where
+        T: IntoIterator<Item = I>,
+        I: Into<i64>,
+    {
+        self.input.extend(input.into_iter().map(|x| x.into()));
+    }
+
     pub fn exec(&mut self) -> Interrupt {
         if self.halted {
             return Interrupt::Halt;

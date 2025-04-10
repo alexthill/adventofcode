@@ -1,3 +1,5 @@
+pub mod vector;
+
 use std::cmp;
 use std::ops;
 
