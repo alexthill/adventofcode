@@ -32,6 +32,7 @@ impl Day for Day16 {
             let mut nums = nums.clone();
             let mut next = nums.clone();
             for _ in 0..100 {
+                #[allow(clippy::needless_range_loop)]
                 for i in 0..nums.len() {
                     let mut sum = 0;
                     for (j, &num) in nums.iter().enumerate() {

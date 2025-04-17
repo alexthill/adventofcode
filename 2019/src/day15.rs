@@ -33,7 +33,7 @@ impl Day for Day15 {
 
         map[pos.1 as usize][pos.0 as usize] = 1;
 
-        while reachable_unknows.len() != 0 {
+        while !reachable_unknows.is_empty() {
             let mov = loop {
                 if let Some(mov) = (1..=4).find(|&mov| {
                     let new_pos = move_to(pos, mov);
@@ -113,7 +113,9 @@ fn _print_map(map: &[[i64; W]; H], pos: (i32, i32)) {
     let mut x_max = usize::MIN;
     let mut y_min = usize::MAX;
     let mut y_max = usize::MIN;
+    #[allow(clippy::needless_range_loop)]
     for y in 0..H {
+        #[allow(clippy::needless_range_loop)]
         for x in 0..W {
             if map[y][x] != -1 {
                 x_min = x_min.min(x);
@@ -123,7 +125,9 @@ fn _print_map(map: &[[i64; W]; H], pos: (i32, i32)) {
             }
         }
     }
+    #[allow(clippy::needless_range_loop)]
     for y in y_min..=y_max {
+        #[allow(clippy::needless_range_loop)]
         for x in x_min..=x_max {
             if x == W / 2 && y == H / 2 {
                 print!("S");
