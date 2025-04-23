@@ -9,9 +9,9 @@ pub enum Interrupt {
 #[derive(Default)]
 pub struct Comp {
     prog: Vec<i64>,
+    input: VecDeque<i64>,
     ic: usize,
     halted: bool,
-    input: VecDeque<i64>,
     output: Option<i64>,
     relative_offset: i64,
 }
@@ -100,6 +100,16 @@ impl Comp {
             self.exec();
         }
         self.output()
+    }
+
+    pub fn reset(&mut self, prog: &[i64]) {
+        self.prog.truncate(prog.len()); // prog might got bigger during execution
+        self.prog.copy_from_slice(prog);
+        self.input.clear();
+        self.ic = 0;
+        self.halted = false;
+        self.output = None;
+        self.relative_offset = 0;
     }
 
     fn write(&mut self, idx: usize, value: i64) -> usize {
