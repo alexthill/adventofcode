@@ -21,6 +21,7 @@ mod day17;
 mod day18;
 mod day19;
 mod day20;
+mod day21;
 
 pub struct Year2019;
 
@@ -49,7 +50,7 @@ impl Year for Year2019 {
     type Day18 = day18::Day18;
     type Day19 = day19::Day19;
     type Day20 = day20::Day20;
-    type Day21 = aoc_lib_rust::DayNone;
+    type Day21 = day21::Day21;
     type Day22 = aoc_lib_rust::DayNone;
     type Day23 = aoc_lib_rust::DayNone;
     type Day24 = aoc_lib_rust::DayNone;

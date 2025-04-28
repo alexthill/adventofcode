@@ -59,9 +59,9 @@ impl Day for Day20 {
                             break 'outer;
                         }
                         if id != 0 {
-                            if portals[id].0 == pos as usize {
+                            if portals[id].0 == pos {
                                 queue.push_back((portals[id].1, dist));
-                            } else if portals[id].1 == pos as usize {
+                            } else if portals[id].1 == pos {
                                 queue.push_back((portals[id].0, dist));
                             } else {
                                 unreachable!();
@@ -114,9 +114,9 @@ impl Day for Day20 {
                             } else {
                                 continue;
                             };
-                            if portals[id].0 == pos as usize {
+                            if portals[id].0 == pos {
                                 queue.push_back((portals[id].1, dist, level));
-                            } else if portals[id].1 == pos as usize {
+                            } else if portals[id].1 == pos {
                                 queue.push_back((portals[id].0, dist, level));
                             } else {
                                 unreachable!();
