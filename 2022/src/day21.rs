@@ -8,7 +8,7 @@ pub fn solve(input: String) -> Solution {
     let mut monkeys = Vec::new();
     let mut waiting = HashMap::new();
     let mut humn_num = -1;
-    for line in input.as_bytes().split(|c| *c == b'\n') {
+    for line in input.as_bytes().trim_ascii_end().split(|c| *c == b'\n') {
         let name = &line[..4];
         if line[6].is_ascii_digit() {
             let num = line[6..].iter().fold(0, |acc, c| acc * 10 + (*c - b'0') as i64);
@@ -35,7 +35,7 @@ pub fn solve(input: String) -> Solution {
     };
 
     while let Some((name, num)) = shouting.pop() {
-        let &(idx, n) = waiting.get(name.as_ref()).unwrap();
+        let Some(&(idx, n)) = waiting.get(name) else { break };
         let monkey = monkeys.get_mut(idx).unwrap();
         monkey.2[n] = num;
         if monkey.2[n ^ 1] != -1 {
