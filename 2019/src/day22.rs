@@ -36,7 +36,7 @@ impl Day for Day22 {
                 match mov {
                     Move::DealIntoNew => (a, b) = (size - a, size - 1 - b),
                     Move::DealWithIncr(incr) => (a, b) = ((a * incr) % size, (b * incr) % size),
-                    Move::Cut(cut) => b = b - cut,
+                    Move::Cut(cut) => b -= cut,
                 }
             }
             (a, b)

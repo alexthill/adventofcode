@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Interrupt {
     Output(i64),
     Input,
@@ -51,55 +52,54 @@ impl Comp {
         self.input.extend(input.into_iter().map(|x| x.into()));
     }
 
-    pub fn exec(&mut self) -> Interrupt {
+    pub fn exec_one(&mut self) -> Option<Interrupt> {
         if self.halted {
-            return Interrupt::Halt;
+            return Some(Interrupt::Halt);
         }
-
-        loop {
-            self.ic += match self.prog[self.ic] % 100 {
-                1 => self.write(3, self.args([1, 2]).iter().sum()),
-                2 => self.write(3, self.args([1, 2]).iter().product()),
-                3 => {
-                    let Some(value) = self.input.pop_front() else {
-                        break Interrupt::Input;
-                    };
-                    self.write(1, value)
-                }
-                4 => {
-                    let addr = self.get_addr(self.prog[self.ic] / 100, 1);
-                    self.output = Some(self.prog[addr]);
-                    self.ic += 2;
-                    break Interrupt::Output(self.prog[addr]);
-                }
-                5 => match self.args([1, 2]) {
-                    [0, _] => 3,
-                    [_, a] => { self.ic = a as _; 0 }
-                }
-                6 => match self.args([1, 2]) {
-                    [0, a] => { self.ic = a as _; 0 }
-                    [_, _] => 3,
-                }
-                7 => self.write(3, self.args([1, 2]).windows(2).all(|a| a[0] < a[1]) as _),
-                8 => self.write(3, self.args([1, 2]).windows(2).all(|a| a[0] == a[1]) as _),
-                9 => {
-                    self.relative_offset += self.args([1])[0];
-                    2
-                }
-                99 => {
-                    self.halted = true;
-                    break Interrupt::Halt;
-                }
-                _ => unreachable!(),
-            };
-        }
+        self.ic += match self.prog[self.ic] % 100 {
+            1 => self.write(3, self.args([1, 2]).iter().sum()),
+            2 => self.write(3, self.args([1, 2]).iter().product()),
+            3 => {
+                let Some(value) = self.input.pop_front() else {
+                    return Some(Interrupt::Input);
+                };
+                self.write(1, value)
+            }
+            4 => {
+                let addr = self.get_addr(self.prog[self.ic] / 100, 1);
+                self.output = Some(self.prog[addr]);
+                self.ic += 2;
+                return Some(Interrupt::Output(self.prog[addr]));
+            }
+            5 => match self.args([1, 2]) {
+                [0, _] => 3,
+                [_, a] => { self.ic = a as _; 0 }
+            }
+            6 => match self.args([1, 2]) {
+                [0, a] => { self.ic = a as _; 0 }
+                [_, _] => 3,
+            }
+            7 => self.write(3, self.args([1, 2]).windows(2).all(|a| a[0] < a[1]) as _),
+            8 => self.write(3, self.args([1, 2]).windows(2).all(|a| a[0] == a[1]) as _),
+            9 => {
+                self.relative_offset += self.args([1])[0];
+                2
+            }
+            99 => {
+                self.halted = true;
+                return Some(Interrupt::Halt);
+            }
+            _ => unreachable!(),
+        };
+        None
     }
 
-    pub fn run_to_halt(&mut self) -> Option<i64> {
-        while !self.halted() {
-            self.exec();
+    pub fn exec(&mut self) -> Interrupt {
+        loop {
+            if let Some(interrupt) = self.exec_one() {
+                return interrupt;
+            }
         }
-        self.output()
     }
 
     pub fn reset(&mut self, prog: &[i64]) {
