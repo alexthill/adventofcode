@@ -1,5 +1,6 @@
 mod cli;
 mod day;
+mod day_result;
 mod solution;
 pub mod utils;
 mod year;
