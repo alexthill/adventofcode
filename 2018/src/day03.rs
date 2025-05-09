@@ -27,8 +27,7 @@ impl Day for Day03 {
         let x_max = claims.iter().map(|claim| claim.3).max().unwrap();
         let y_max = claims.iter().map(|claim| claim.4).max().unwrap();
 
-        let mut fabric = Vec::new();
-        fabric.resize((x_max * y_max) as _, 0_u8);
+        let mut fabric = vec![0_u8; (x_max * y_max) as _];
 
         let mut sol1 = 0;
         for (_, left, top, right, bottom) in claims.iter().copied() {

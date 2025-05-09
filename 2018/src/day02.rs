@@ -34,7 +34,7 @@ impl Day for Day02 {
                     }
                 }
                 if let Some(diff_pos) = diff_pos {
-                    sol2 = line.into_iter().enumerate().filter_map(|(i, c)| {
+                    sol2 = line.iter().enumerate().filter_map(|(i, c)| {
                         if i == diff_pos { None } else { Some(*c as char) }
                     }).collect();
                     break;
