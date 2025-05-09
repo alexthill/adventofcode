@@ -1,4 +1,5 @@
 use aoc_lib_rust::{Day, Example, Solution};
+use std::mem;
 
 pub struct Day15;
 
@@ -8,44 +9,34 @@ impl Day for Day15 {
     const PART2: Solution = Solution::U32(3718541);
 
     fn solve(input: &str) -> [Solution; 2] {
+        const ROUNDS: u32 = 30_000_000;
         let mut start_nums = input.split(',')
             .map(|s| s.parse().unwrap())
-            .collect::<Vec<usize>>();
+            .collect::<Vec<u32>>();
         let start_n = start_nums.pop().unwrap();
         let mut last_said = Vec::new();
-        last_said.resize(*start_nums.iter().max().unwrap() + 1, 0);
+        last_said.resize(ROUNDS as _, 0);
 
         let mut i = 1;
         for &n in &start_nums {
-            last_said[n] = i;
+            last_said[n as usize] = i;
             i += 1;
         }
 
         let mut last_n = start_n;
         let mut sol1 = 0;
-        for i in i..30000000 {
+        for i in i..ROUNDS {
             if i == 2020 {
                 sol1 = last_n;
             }
-            let n = match last_said.get(last_n) {
-                None | Some(0) => {
-                    //println!("{}: {last_n} was not said before", i + 1);
-                    0
-                }
-                Some(turn) => {
-                    //println!("{}: {last_n} was last said {turn}", i + 1);
-                    i - turn
-                }
+            last_n = match mem::replace(&mut last_said[last_n as usize], i) {
+                0 => 0,
+                turn => i - turn,
             };
-            if last_n >= last_said.len() {
-                last_said.resize(last_n + 1, 0);
-            }
-            last_said[last_n] = i;
-            last_n = n;
         }
         let sol2 = last_n;
 
-        [Solution::U32(sol1 as _), Solution::U32(sol2 as _)]
+        [Solution::U32(sol1), Solution::U32(sol2)]
     }
 
     const EXAMPLES: &'static [Example] = &[
