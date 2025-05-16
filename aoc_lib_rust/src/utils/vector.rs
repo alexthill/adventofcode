@@ -33,6 +33,31 @@ impl<T: ops::AddAssign, const N: usize> ops::AddAssign for Vector<T, N> {
     }
 }
 
+impl<T: ops::Mul<Output = T> + Copy, const N: usize> ops::Mul<T> for Vector<T, N> {
+    type Output = Self;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Self(self.0.map(|a| a * rhs))
+    }
+}
+
+impl<T: ops::SubAssign, const N: usize> ops::Sub for Vector<T, N> {
+    type Output = Self;
+
+    fn sub(mut self, rhs: Self) -> Self::Output {
+        self -= rhs;
+        self
+    }
+}
+
+impl<T: ops::SubAssign, const N: usize> ops::SubAssign for Vector<T, N> {
+    fn sub_assign(&mut self, rhs: Self) {
+        for (a, b) in self.0.iter_mut().zip(rhs.0) {
+            *a -= b;
+        }
+    }
+}
+
 impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
     fn from(array: [T; N]) -> Self {
         Self(array)
