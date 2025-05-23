@@ -11,7 +11,7 @@ impl Day for Day09 {
     fn solve(input: &str) -> [Solution; 2] {
         let mut iter = input.split(' ');
         let player_count = iter.next().unwrap().parse::<usize>().unwrap();
-        let last_marble = iter.skip(5).next().unwrap().parse::<u32>().unwrap();
+        let last_marble = iter.nth(5).unwrap().parse::<u32>().unwrap();
 
         let mut list = VecDeque::from([0]);
         let mut players = vec![0; player_count];

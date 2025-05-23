@@ -35,7 +35,7 @@ impl Day for Day05 {
         let sol1 = reduce(&mut poly);
 
         let mut poly_copy = Vec::with_capacity(sol1);
-        let sol2 = (b'a'..b'z').map(|rm| {
+        let sol2 = (b'a'..=b'z').map(|rm| {
             poly_copy.clear();
             let iter = poly.iter().copied().take(sol1)
                 .filter(|c| c.to_ascii_lowercase() != rm);

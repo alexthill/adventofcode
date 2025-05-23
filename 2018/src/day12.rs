@@ -56,12 +56,12 @@ impl Day for Day12 {
                 let first = state.iter().position(|x| *x).unwrap();
                 let len = state.len() - first;
                 state.copy_within(first..first + len, 5);
-                for i in 5 + len..state.len() {
-                    state[i] = false;
+                for x in state.iter_mut().skip(5 + len) {
+                    *x = false
                 }
                 shift += first - 5;
             }
-            if &state[1..] == &state_copy[..state_copy.len() - 1] {
+            if state[1..] == state_copy[..state_copy.len() - 1] {
                 break;
             }
             gen += 1;

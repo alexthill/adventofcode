@@ -24,20 +24,20 @@ impl Day for Day14 {
                 scores.push(sum);
             }
             for idx in idx.iter_mut() {
-                *idx = (*idx + 1 + scores[*idx as usize] as usize) % scores.len();
+                *idx = (*idx + 1 + scores[*idx] as usize) % scores.len();
             }
             if scores.len() > find.len() {
                 let start = scores.len() - find.len();
-                if &scores[start..] == find {
+                if scores[start..] == find {
                     sol2 = start;
-                } else if &scores[start - 1..scores.len() - 1] == find {
+                } else if scores[start - 1..scores.len() - 1] == find {
                     sol2 = start - 1;
                 }
             }
         }
 
         let sol1 = scores[n..n + 10].iter()
-            .map(|score| (*score as u8 + b'0') as char)
+            .map(|score| (*score + b'0') as char)
             .collect::<String>();
 
         [Solution::String(sol1), Solution::U32(sol2 as _)]

@@ -27,9 +27,9 @@ impl Day for Day11 {
             for size in sizes {
                 for y in 0..=300 - size {
                     let mut sum = 0;
-                    for y2 in y..y + size {
-                        for x2 in 0..size {
-                            sum += grid[y2][x2];
+                    for row in grid.iter().skip(y).take(size) {
+                        for cell in row.iter().take(size) {
+                            sum += cell;
                         }
                     }
                     if sum > max {
@@ -38,9 +38,9 @@ impl Day for Day11 {
                     }
 
                     for x in 0..300 - size {
-                        for y2 in y..y + size {
-                            sum -= grid[y2][x];
-                            sum += grid[y2][x + size];
+                        for row in grid.iter().skip(y).take(size) {
+                            sum -= row[x];
+                            sum += row[x + size];
                         }
                         if sum > max {
                             max = sum;

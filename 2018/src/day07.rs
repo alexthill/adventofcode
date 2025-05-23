@@ -15,7 +15,7 @@ impl Day for Day07 {
             let pre = (line[b"Step ".len()] - b'A') as usize;
             let step = (line[b"Step X must be finished before step ".len()] - b'A') as usize;
             debug_assert_ne!(pre, step);
-            if steps[pre] == None {
+            if steps[pre].is_none() {
                 steps[pre] = Some(Vec::new());
             }
             if let Some(pres) = steps[step].as_mut() {
@@ -50,8 +50,8 @@ impl Day for Day07 {
         let mut workers: [Option<(usize, u32)>; 5] = [None; 5];
         let mut sol2 = 0;
         loop {
-            for i in 0..worker_count {
-                let Some(worker) = workers[i].as_mut() else { continue };
+            for worker_outer in workers.iter_mut().take(worker_count) {
+                let Some(worker) = worker_outer.as_mut() else { continue };
                 worker.1 -= 1;
                 if worker.1 == 0 {
                     for pres in steps.iter_mut().filter_map(|pres| pres.as_mut()) {
@@ -59,17 +59,17 @@ impl Day for Day07 {
                             pres.remove(idx);
                         }
                     }
-                    workers[i] = None;
+                    *worker_outer = None;
                 }
             }
-            for i in 0..steps.len() {
-                let Some(pres) = steps[i].as_mut() else { continue };
+            for (i, step) in steps.iter_mut().enumerate() {
+                let Some(pres) = step.as_mut() else { continue };
                 if pres.is_empty() {
                     if let Some(worker) = workers.iter_mut().take(worker_count)
                         .find(|w| w.is_none())
                     {
                         *worker = Some((i, extra_time + i as u32));
-                        steps[i] = None;
+                        *step = None;
                     }
                 }
             }
