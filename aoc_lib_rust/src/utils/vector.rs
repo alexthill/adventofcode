@@ -16,6 +16,23 @@ impl<T, const N: usize> Vector<T, N> {
     }
 }
 
+impl<T: Copy, const N: usize> Vector<T, N> {
+    pub fn x(&self) -> T {
+        const { assert!(N > 0, "not enough dimensions"); }
+        self.0[0]
+    }
+
+    pub fn y(&self) -> T {
+        const { assert!(N > 1, "not enough dimensions"); }
+        self.0[1]
+    }
+
+    pub fn z(&self) -> T {
+        const { assert!(N > 2, "not enough dimensions"); }
+        self.0[2]
+    }
+}
+
 impl<T: ops::AddAssign, const N: usize> ops::Add for Vector<T, N> {
     type Output = Self;
 
