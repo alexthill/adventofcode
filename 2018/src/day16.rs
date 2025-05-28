@@ -1,10 +1,5 @@
 use aoc_lib_rust::{Day, Example, Solution};
-
-macro_rules! next_parse(
-    ($expr:expr, $ty:ty) => (
-        $expr.next().unwrap().parse::<$ty>().unwrap()
-    );
-);
+use aoc_lib_rust::next_parse;
 
 pub struct Day16;
 
