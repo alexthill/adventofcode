@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! next(
-    ($expr:expr, $ty:ty) => (
+    ($expr:expr) => (
         $expr.next().unwrap()
     );
 );
