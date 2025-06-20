@@ -36,6 +36,11 @@ impl Day for Day21 {
                 }
                 cache[value as usize] = true;
                 last_value = value;
+            } else if *code == 1 && *args == [2, 1, 5] {
+                // This is an optimization based on my input, it my not work on others input.
+                // It skips the inner loopy, which simply increases register [2] until it is
+                // bigger then the value in register [3], when multiplied by 256.
+                registers[2] = registers[3] / 256;
             }
             registers = exec_op(*code as u8, *args, registers);
             registers[ip] += 1;
