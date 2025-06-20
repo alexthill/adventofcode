@@ -1,16 +1,12 @@
-use std::{cmp, mem, ops};
+use std::{cmp, ops};
 
 /// Calculates the GCD of two numbers with the euclidian algorithm.
 pub fn gcd<T>(mut a: T, mut b: T) -> T
 where
     T: Copy + Default + PartialEq + cmp::PartialOrd + ops::Rem<Output = T>,
 {
-    if a == b { return a; }
-    if b > a {
-        mem::swap(&mut a, &mut b);
-    }
-    while b > T::default() {
-        mem::swap(&mut a, &mut b);
+    while b != T::default() {
+        (a, b) = (b, a % b);
     }
     a
 }
@@ -21,7 +17,7 @@ where
     T: Copy + Default + PartialEq + cmp::PartialOrd + ops::Rem<Output = T>
         + ops::Div<Output = T> + ops::Mul<Output = T>,
 {
-    a * (b / gcd(a, b))
+    a / gcd(a, b) * b
 }
 
 /// Calculates the GCD and the Bézout coefficents of two numbers.
