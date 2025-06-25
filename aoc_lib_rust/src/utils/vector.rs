@@ -1,3 +1,5 @@
+use std::cmp;
+use std::iter;
 use std::ops;
 
 pub type Vec2 = Vector<f32, 2>;
@@ -14,22 +16,59 @@ impl<T, const N: usize> Vector<T, N> {
     pub fn new(array: [T; N]) -> Self {
         Self(array)
     }
+
+    pub fn map<S, F: FnMut(T) -> S>(self, f: F) -> Vector<S, N> {
+        Vector(self.0.map(f))
+    }
+
+    pub fn x_mut(&mut self) -> &mut T {
+        &mut self.0[0]
+    }
+
+    pub fn y_mut(&mut self) -> &mut T {
+        &mut self.0[1]
+    }
+
+    pub fn z_mut(&mut self) -> &mut T {
+        &mut self.0[2]
+    }
+
+    pub fn w_mut(&mut self) -> &mut T {
+        &mut self.0[3]
+    }
 }
 
 impl<T: Copy, const N: usize> Vector<T, N> {
     pub fn x(&self) -> T {
-        const { assert!(N > 0, "not enough dimensions"); }
         self.0[0]
     }
 
     pub fn y(&self) -> T {
-        const { assert!(N > 1, "not enough dimensions"); }
         self.0[1]
     }
 
     pub fn z(&self) -> T {
-        const { assert!(N > 2, "not enough dimensions"); }
         self.0[2]
+    }
+
+    pub fn w(&self) -> T {
+        self.0[3]
+    }
+}
+
+impl<T: iter::Sum, const N: usize> Vector<T, N> {
+    pub fn sum(self) -> T {
+        self.0.into_iter().sum()
+    }
+}
+
+impl<T: cmp::Ord, const N: usize> Vector<T, N> {
+    pub fn min(self) -> Option<T> {
+        self.0.into_iter().min()
+    }
+
+    pub fn max(self) -> Option<T> {
+        self.0.into_iter().max()
     }
 }
 
@@ -75,9 +114,23 @@ impl<T: ops::SubAssign, const N: usize> ops::SubAssign for Vector<T, N> {
     }
 }
 
+impl<T: ops::Div<Output = T> + Copy, const N: usize> ops::Div<T> for Vector<T, N> {
+    type Output = Self;
+
+    fn div(self, rhs: T) -> Self::Output {
+        Self(self.0.map(|a| a / rhs))
+    }
+}
+
 impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
     fn from(array: [T; N]) -> Self {
         Self(array)
+    }
+}
+
+impl<T, const N: usize> From<Vector<T, N>> for [T; N] {
+    fn from(vector: Vector<T, N>) -> Self {
+        vector.0
     }
 }
 
