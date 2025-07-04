@@ -1,32 +1,33 @@
 use aoc_lib_rust::{Day, Example, Solution};
 use aoc_lib_rust::{next_parse, utils::vector::Vector};
 
+type IVec2 = Vector<i32, 2>;
 type IVec3 = Vector<i32, 3>;
 
-fn overlap(a: (i32, i32), b: (i32, i32)) -> Option<(i32, i32)> {
-    let (a_min, a_max) = a;
-    let (b_min, b_max) = b;
+fn overlap(a: IVec2, b: IVec2) -> Option<IVec2> {
+    let [a_min, a_max] = a.into();
+    let [b_min, b_max] = b.into();
     if a_max < b_min || b_max < a_min {
         None
     } else {
-        Some((a_min.max(b_min), a_max.min(b_max)))
+        Some([a_min.max(b_min), a_max.min(b_max)].into())
     }
 }
 
 #[derive(Debug, Clone)]
 struct Range {
     count: u32,
+    pruned: bool,
     split_dim: u8,
     split: i32,
     halves: Option<Box<[Range; 2]>>,
 }
 impl Range {
     fn new(count: u32) -> Self {
-        Range { count, split_dim: 0, split: 0, halves: None }
+        Range { count, pruned: false, split_dim: 0, split: 0, halves: None }
     }
 
-    fn intersection(coords: &[(i32, i32); 4], other: &[(i32, i32); 4]) -> Option<[(i32, i32); 4]> {
-        let (a, b) = (coords, other);
+    fn intersection(a: [IVec2; 4], b: [IVec2; 4]) -> Option<[IVec2; 4]> {
         let Some(o0) = overlap(a[0], b[0]) else { return None };
         let Some(o1) = overlap(a[1], b[1]) else { return None };
         let Some(o2) = overlap(a[2], b[2]) else { return None };
@@ -36,75 +37,84 @@ impl Range {
 
     fn add_range(
         &mut self,
-        coords: [(i32, i32); 4],
-        other: [(i32, i32); 4],
+        coords: [IVec2; 4],
+        other: [IVec2; 4],
         count: u32,
         max_count: u32,
-    ) {
-        debug_assert!(coords.iter().all(|(start, end)| start <= end));
-        debug_assert!(other.iter().all(|(start, end)| start <= end));
-
-        let Some(inter) = Self::intersection(&coords, &other) else { return };
+    ) -> bool {
+        if self.pruned {
+            return true;
+        }
+        let Some(inter) = Self::intersection(coords, other) else {
+            return false;
+        };
         if coords == inter {
             self.count += 1;
-            return;
+            return false;
         }
+
         if self.halves.is_none() {
-            if max_count - count > 50 {
-                return;
+            // A magic number here, that is probably bigger than the maximum
+            // number of bots that are part of the maximum cover.
+            if max_count - count > 30 {
+                return true;
             }
             let (dim, _) = coords.iter().enumerate()
-                .filter(|(dim, range)| **range != inter[*dim])
-                .next().unwrap();
+                .find(|(dim, range)| **range != inter[*dim])
+                .unwrap();
             self.split_dim = dim as _;
-            self.split = if inter[dim].0 == coords[dim].0 {
-                inter[dim].1
+            self.split = if inter[dim].x() == coords[dim].x() {
+                inter[dim].y()
             } else {
-                inter[dim].0 - 1
+                inter[dim].x() - 1
             };
             self.halves = Some(Box::new([Range::new(0), Range::new(0)]));
         }
+
         let [l_coords, r_coords] = self.child_coords(coords);
-
-        debug_assert!(l_coords.iter().all(|(start, end)| start <= end));
-        debug_assert!(r_coords.iter().all(|(start, end)| start <= end));
-
-        if let Some(halves) = self.halves.as_mut() {
-            let count = count + self.count;
-            halves[0].add_range(l_coords, inter, count, max_count);
-            halves[1].add_range(r_coords, inter, count, max_count);
+        let halves = self.halves.as_mut().unwrap();
+        let count = count + self.count;
+        let l_prune = halves[0].add_range(l_coords, inter, count, max_count);
+        let r_prune = halves[1].add_range(r_coords, inter, count, max_count);
+        if l_prune && r_prune {
+            self.halves = None;
+            self.pruned = true;
+            true
         } else {
-            unreachable!();
+            false
         }
     }
 
-    fn child_coords(&self, coords: [(i32, i32); 4]) -> [[(i32, i32); 4]; 2] {
+    fn child_coords(&self, coords: [IVec2; 4]) -> [[IVec2; 4]; 2] {
         let mut l_coords = coords;
-        l_coords[self.split_dim as usize].1 = self.split;
+        *l_coords[self.split_dim as usize].y_mut() = self.split;
         let mut r_coords = coords;
-        r_coords[self.split_dim as usize].0 = self.split + 1;
+        *r_coords[self.split_dim as usize].x_mut() = self.split + 1;
         [l_coords, r_coords]
     }
 
-    fn best_overlap(&self, coords: [(i32, i32); 4], count: u32) -> (u32, i32, [(i32, i32); 4]) {
+    fn best_overlap(
+        &self,
+        coords: [IVec2; 4],
+        count: u32,
+        best_cover: &mut u32,
+        best_coords: &mut [IVec2; 4],
+        best_man: &mut i32,
+    ) {
         let count = count + self.count;
         if let Some(halves) = self.halves.as_ref() {
             let [l_coords, r_coords] = self.child_coords(coords);
-            [
-                halves[0].best_overlap(l_coords, count),
-                halves[1].best_overlap(r_coords, count),
-            ].into_iter().max_by(|a, b| {
-                a.0.cmp(&b.0).then_with(|| a.1.cmp(&b.1).reverse())
-            }).unwrap()
-        } else {
-            let min_dist = coords.map(|(min, max)| {
-                if min < 0 && max > 0 {
-                    0
-                } else {
-                    min.abs().min(max.abs())
-                }
+            halves[0].best_overlap(l_coords, count, best_cover, best_coords, best_man);
+            halves[1].best_overlap(r_coords, count, best_cover, best_coords, best_man);
+        } else if count >= *best_cover {
+            let man = coords.map(|range| {
+                range.x().abs().min(range.y().abs())
             }).into_iter().sum::<i32>();
-            (count, min_dist, coords)
+            if count > *best_cover || man < *best_man {
+                *best_cover = count;
+                *best_coords = coords;
+                *best_man = man;
+            }
         }
     }
 }
@@ -134,112 +144,28 @@ impl Day for Day23 {
             (*max_pos - *pos).map(|x| x.abs()).sum() <= *max_r
         }).count();
 
-
-        /*
-        let boxes = bots.into_iter().map(|(pos, r)| {
+        // Coordinate change from 3D to 4D in such a way that the diamond
+        // ranges become axis aligned boxes.
+        let boxes = bots.iter().copied().map(|(pos, r)| {
             let (x, y, z) = (pos.x(), pos.y(), pos.z());
             let (x, y, z, w) = (x + y + z, x + y - z, x - y + z, -x + y + z);
-            [(x - r, x + r), (y - r, y + r), (z - r, z + r), (w - r, w + r)]
+            [[x - r, x + r], [y - r, y + r], [z - r, z + r], [w - r, w + r]]
         }).collect::<Vec<_>>();
-        let bounding = boxes.iter().fold([(i32::MAX, i32::MIN); 4], |acc, b| [
-           (acc[0].0.min(b[0].0), acc[0].1.max(b[0].1)),
-           (acc[1].0.min(b[1].0), acc[1].1.max(b[1].1)),
-           (acc[2].0.min(b[2].0), acc[2].1.max(b[2].1)),
-           (acc[3].0.min(b[3].0), acc[3].1.max(b[3].1)),
-        ]);
-        println!("bounding {bounding:?}");
+        let bounding = boxes.iter().fold([[i32::MAX, i32::MIN]; 4], |acc, b| [
+           [acc[0][0].min(b[0][0]), acc[0][1].max(b[0][1])],
+           [acc[1][0].min(b[1][0]), acc[1][1].max(b[1][1])],
+           [acc[2][0].min(b[2][0]), acc[2][1].max(b[2][1])],
+           [acc[3][0].min(b[3][0]), acc[3][1].max(b[3][1])],
+        ]).map(IVec2::from);
 
         let mut range = Range::new(0);
         for (i, b) in boxes.into_iter().enumerate() {
-            println!(">{i} {b:?}");
-            range.add_range(bounding, b, 0, i as _);
+            range.add_range(bounding, b.map(IVec2::from), 0, i as _);
         }
-        //println!("{range:?}");
-        let best = range.best_overlap(bounding, 0);
-        println!("{best:?}");
-        let sol2 = best.1 / 2;
-        */
-
-        /*
-        let mut inters = boxes.iter().enumerate().map(|(i, b)| (i, *b, vec![i])).collect::<Vec<_>>();
-        let mut inters_next = Vec::new();
-        for i in 1..boxes.len() {
-            println!("round {i} {}", inters.len());
-            for (start, a, set) in inters.iter() {
-                for (box_idx, b) in boxes.iter().enumerate().skip(start + 1) {
-                    let Some(o0) = overlap(a[0], b[0]) else { continue };
-                    let Some(o1) = overlap(a[1], b[1]) else { continue };
-                    let Some(o2) = overlap(a[2], b[2]) else { continue };
-                    let Some(o3) = overlap(a[3], b[3]) else { continue };
-                    let inter = [o0, o1, o2, o3];
-                    let mut set = set.clone();
-                    set.push(box_idx);
-                    inters_next.push((box_idx, inter, set));
-                }
-            }
-            if inters_next.len() == 0 {
-                break;
-            }
-            std::mem::swap(&mut inters, &mut inters_next);
-            inters_next.clear();
-        }
-        println!("{} {:?}", inters.len(), inters.iter().map(|(_, _, set)| set.clone()).collect::<Vec<_>>());
-        let sol2 = inters[0].1.map(|(min, max)| {
-            if min < 0 && max > 0 {
-                0
-            } else {
-                min.abs().min(max.abs())
-            }
-        }).into_iter().sum::<i32>() / 2;
-        */
-
-        /*
-        fn max_overlap(
-            d: u32,
-            boxes: &[[(i32, i32); 4]],
-            inter: [(i32, i32); 4],
-            mut idx: usize,
-        ) -> (u32, [(i32, i32); 4]) {
-            let mut best = (d, inter);
-            for b in &boxes[idx..] {
-                idx += 1;
-                let a = inter;
-                let Some(o0) = overlap(a[0], b[0]) else { continue };
-                let Some(o1) = overlap(a[1], b[1]) else { continue };
-                let Some(o2) = overlap(a[2], b[2]) else { continue };
-                let Some(o3) = overlap(a[3], b[3]) else { continue };
-                let inter = max_overlap(d + 1, boxes, [o0, o1, o2, o3], idx);
-                if inter.0 > best.0 {
-                    best = inter;
-                }
-            }
-            best
-        }
-        let (count, inter) = max_overlap(0, &boxes, [(i32::MIN, i32::MAX); 4], 0);
-        println!("{boxes:?}");
-        println!("{count} {inter:?}");
-        let sol2 = inter.map(|(min, max)| {
-            if min < 0 && max > 0 {
-                0
-            } else {
-                min.abs().min(max.abs())
-            }
-        }).into_iter().sum::<i32>() / 2;
-        */
-
-        /*
-        let inters = boxes.iter().copied().enumerate().flat_map(|(i, a)| {
-            boxes.iter().copied().enumerate().filter_map(move |(j, b)| {
-                if i == j { return None; }
-                let Some(o0) = overlap(a[0], b[0]) else { return None };
-                let Some(o1) = overlap(a[1], b[1]) else { return None };
-                let Some(o2) = overlap(a[2], b[2]) else { return None };
-                let Some(o3) = overlap(a[3], b[3]) else { return None };
-                Some([o0, o1, o2, o3])
-            })
-        }).collect::<Vec<_>>();
-        println!("{inters:?}");
-        */
+        let mut cover = 0;
+        let mut coords = Default::default();
+        let mut man = 0;
+        range.best_overlap(bounding, 0, &mut cover, &mut coords, &mut man);
 
         let count_cover = |coords: IVec3| {
             bots.iter().filter(|(pos, r)| {
@@ -247,6 +173,32 @@ impl Day for Day23 {
             }).count()
         };
 
+        // We know have some box in 4D space. Either there is a bug or I do not
+        // understand how this works but just taking the minimum manhattan dist
+        // of this box is wrong.
+        // So we need to check all points in this box if they have the best
+        // cover or not.
+        let mut min_man = i32::MAX;
+        for v in coords[1].x()..=coords[1].y() {
+            for w in coords[2].x()..=coords[2].y() {
+                for u in coords[3].x()..=coords[3].y() {
+                    let point = IVec3::from([(v + w) / 2, (v + u) / 2, (u + w) / 2]);
+                    if count_cover(point) != cover as usize {
+                        continue;
+                    }
+                    min_man = min_man.min(point.map(|x| x.abs()).sum());
+                }
+            }
+        }
+        let sol2 = min_man;
+
+        // Another working solution that tries to find the best corner of
+        // all ranges and then searches from there to find the solution.
+        // Produces the correct minimum manhattan distance but for the
+        // wrong point. I do not understand why.
+        // The first phase is fast but then searching around for a better
+        // solution takes some time.
+        /*
         let mut best = (0, IVec3::default(), 0);
         for (pos, r) in bots.iter().copied() {
             for dx in -1..=1_i32 {
@@ -267,26 +219,28 @@ impl Day for Day23 {
                 }
             }
         }
-        let mut i = 1;
-        loop {
+        let mut i = 1_i32;
+        'outer: loop {
             let mut found = false;
             for dx in -i..=i {
                 for dy in -i..=i  {
                     for dz in -i..=i {
                         let corner = best.1 + IVec3::from([dx, dy, dz]);
                         let count = count_cover(corner);
+                        if count < best.0 {
+                            continue;
+                        }
+
+                        let manhattan = corner.map(|x| x.abs()).sum();
                         if count > best.0 {
-                            let manhattan = corner.map(|x| x.abs()).sum();
                             best = (count, corner, manhattan);
                             println!("{i} {best:?}");
+                            i = 1.max(i / 2);
+                            continue 'outer;
+                        }
+                        if manhattan < best.2 {
+                            best = (count, corner, manhattan);
                             found = true;
-                        } else if count == best.0 {
-                            let manhattan = corner.map(|x| x.abs()).sum();
-                            if manhattan < best.2 {
-                                best = (count, corner, manhattan);
-                                println!("{i} {best:?}");
-                                found = true;
-                            }
                         }
                     }
                 }
@@ -297,6 +251,7 @@ impl Day for Day23 {
             i += 1;
         }
         let sol2 = best.1.map(|x| x.abs()).sum();
+        */
 
         [Solution::U32(sol1 as _), Solution::U32(sol2 as _)]
     }
