@@ -1,5 +1,33 @@
 use aoc_lib_rust::{Day, Example, Solution};
 
+pub fn knot_hash(input: &[u8]) -> u128 {
+    let mut list: [u8; 256] = std::array::from_fn(|i| i as u8);
+    let len = list.len();
+    let mut curr = len;
+    let mut skip = 0;
+
+    for _ in 0..64 {
+        for length in input.iter().copied().chain([17, 31, 73, 47, 23]) {
+            let mut l = curr;
+            let mut r = l + length as usize - 1;
+            while l < r {
+                let tmp = list[l % len];
+                list[l % len] = list[r % len];
+                list[r % len] = tmp;
+                l += 1;
+                r -= 1;
+            }
+            curr += length as usize + skip;
+            skip += 1;
+        }
+    }
+
+    list.chunks(16)
+        .map(|chunk| chunk.iter().copied().reduce(|acc, e| acc ^ e).unwrap() as u128)
+        .reduce(|acc, n| (acc << 8) | n)
+        .unwrap()
+}
+
 pub struct Day10;
 
 impl Day for Day10 {
@@ -33,36 +61,7 @@ impl Day for Day10 {
 
             list[0] as u32 * list[1] as u32
         };
-
-        let sol2 = {
-            let lengths = input.bytes().chain([17, 31, 73, 47, 23]).collect::<Vec<u8>>();
-            let mut list = (0..=255).collect::<Vec<u8>>();
-            let len = list.len();
-            let mut curr = len;
-            let mut skip = 0;
-
-            for _ in 0..64 {
-                for length in &lengths {
-                    let length = *length as usize;
-                    let mut l = curr;
-                    let mut r = l + length - 1;
-                    while l < r {
-                        let tmp = list[l % len];
-                        list[l % len] = list[r % len];
-                        list[r % len] = tmp;
-                        l += 1;
-                        r -= 1;
-                    }
-                    curr += length + skip;
-                    skip += 1;
-                }
-            }
-
-            list.chunks(16).map(|chunk| {
-                let n = chunk.iter().copied().reduce(|acc, e| acc ^ e).unwrap();
-                format!("{n:02x}")
-            }).collect()
-        };
+        let sol2 = format!("{:032x}", knot_hash(input.as_bytes()));
 
         [Solution::U32(sol1), Solution::String(sol2)]
     }
