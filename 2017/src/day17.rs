@@ -27,7 +27,7 @@ impl Day for Day17 {
         let mut len = buf.len();
         let mut sol2 = 1;
         while len < 50_000_001 {
-            curr = curr + step;
+            curr += step;
             if curr > len {
                 curr %= len;
             }
@@ -37,7 +37,7 @@ impl Day for Day17 {
             len += 1;
 
             let skips = (len - curr) / step;
-            curr = curr + step * skips;
+            curr += step * skips;
             len += skips;
         }
 

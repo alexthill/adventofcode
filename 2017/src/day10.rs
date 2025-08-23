@@ -11,9 +11,7 @@ pub fn knot_hash(input: &[u8]) -> u128 {
             let mut l = curr;
             let mut r = l + length as usize - 1;
             while l < r {
-                let tmp = list[l % len];
-                list[l % len] = list[r % len];
-                list[r % len] = tmp;
+                list.swap(l % len, r %len);
                 l += 1;
                 r -= 1;
             }
@@ -43,20 +41,16 @@ impl Day for Day10 {
             let mut list = (0..=if example { 4 } else { 255 }).collect::<Vec<u8>>();
             let len = list.len();
             let mut curr = len;
-            let mut skip = 0;
 
-            for length in lengths {
+            for (skip, length) in lengths.into_iter().enumerate() {
                 let mut l = curr;
                 let mut r = l + length - 1;
                 while l < r {
-                    let tmp = list[l % len];
-                    list[l % len] = list[r % len];
-                    list[r % len] = tmp;
+                    list.swap(l % len, r %len);
                     l += 1;
                     r -= 1;
                 }
                 curr += length + skip;
-                skip += 1;
             }
 
             list[0] as u32 * list[1] as u32
