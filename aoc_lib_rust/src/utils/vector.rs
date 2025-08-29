@@ -8,7 +8,7 @@ pub type IVec2 = Vector<i32, 2>;
 
 /// A fixed sized vector that is generic over its type and size.
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Vector<T, const N: usize>([T; N]);
 
 impl<T, const N: usize> Vector<T, N> {
