@@ -1,9 +1,23 @@
 use aoc_lib_rust::{Day, Example, Solution};
 use std::collections::VecDeque;
+use std::num::ParseIntError;
+use std::str::FromStr;
 
-enum Val {
+#[derive(Debug)]
+pub enum Val {
     Reg(usize),
     Value(i64),
+}
+
+impl FromStr for Val {
+    type Err = ParseIntError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.len() == 1 && s.as_bytes()[0].is_ascii_alphabetic() {
+            Ok(Self::Reg((s.as_bytes()[0] - b'a') as usize))
+        } else {
+            Ok(Self::Value(s.parse()?))
+        }
+    }
 }
 
 enum Op {
@@ -24,14 +38,6 @@ impl Day for Day18 {
     const PART2: Solution = Solution::U32(7239);
 
     fn solve(input: &str) -> [Solution; 2] {
-        fn get_operand(operand: &str) -> Val {
-            if operand.len() == 1 && operand.as_bytes()[0].is_ascii_alphabetic() {
-                Val::Reg((operand.as_bytes()[0] - b'a') as usize)
-            } else {
-                Val::Value(operand.parse().unwrap())
-            }
-        }
-
         let ops = input.lines().map(|line| {
             let mut parts = line.split(' ');
             let op = parts.next().unwrap();
@@ -39,13 +45,13 @@ impl Day for Day18 {
             let b = parts.next();
 
             match op {
-                "snd" => Op::Snd(get_operand(a)),
-                "set" => Op::Set((a.as_bytes()[0] - b'a') as usize, get_operand(b.unwrap())),
-                "add" => Op::Add((a.as_bytes()[0] - b'a') as usize, get_operand(b.unwrap())),
-                "mul" => Op::Mul((a.as_bytes()[0] - b'a') as usize, get_operand(b.unwrap())),
-                "mod" => Op::Mod((a.as_bytes()[0] - b'a') as usize, get_operand(b.unwrap())),
+                "snd" => Op::Snd(a.parse().unwrap()),
+                "set" => Op::Set((a.as_bytes()[0] - b'a') as usize, b.unwrap().parse().unwrap()),
+                "add" => Op::Add((a.as_bytes()[0] - b'a') as usize, b.unwrap().parse().unwrap()),
+                "mul" => Op::Mul((a.as_bytes()[0] - b'a') as usize, b.unwrap().parse().unwrap()),
+                "mod" => Op::Mod((a.as_bytes()[0] - b'a') as usize, b.unwrap().parse().unwrap()),
                 "rcv" => Op::Rcv((a.as_bytes()[0] - b'a') as usize),
-                "jgz" => Op::Jgz(get_operand(a), get_operand(b.unwrap())),
+                "jgz" => Op::Jgz(a.parse().unwrap(), b.unwrap().parse().unwrap()),
                 other => panic!("unknow instruction {other}"),
             }
         }).collect::<Vec<_>>();
