@@ -9,7 +9,7 @@ My solutions for [Advent of Code](https://adventofcode.com/).
 | 2020  |  50 🌟 | Rust          | ❌           |
 | 2019  |  50 🌟 | Rust          | ❌           |
 | 2018  |  50 🌟 | Rust          | ❌           |
-| 2017  |        |               |              |
+| 2017  |  50 🌟 | Rust          | ❌           |
 | 2016  |        |               |              |
 | 2015  |  24 ⭐ | Prolog        | ❌           |
-| **Total** | 371 ⭐ |           |  4           |
+| **Total** | 422 ⭐ |           |  4           |
