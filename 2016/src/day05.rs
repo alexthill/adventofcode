@@ -33,7 +33,7 @@ impl Day for Day05 {
                 }
             }
         }
-        let sol2 = sol2.into_iter().filter_map(|x| x).collect();
+        let sol2 = sol2.into_iter().flatten().collect();
 
         [Solution::String(sol1), Solution::String(sol2)]
     }

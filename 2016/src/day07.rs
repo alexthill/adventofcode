@@ -26,7 +26,7 @@ impl Day for Day07 {
                     found = true;
                 }
             }
-            return found;
+            found
         }).count();
 
         let sol2 = input.lines().filter(|line| {
@@ -46,7 +46,7 @@ impl Day for Day07 {
                     abas.insert((in_brackets, window[0], window[1]));
                 }
             }
-            return false;
+            false
         }).count();
 
         [Solution::U32(sol1 as _), Solution::U32(sol2 as _)]
