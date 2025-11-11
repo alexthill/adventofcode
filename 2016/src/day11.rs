@@ -80,8 +80,6 @@ impl Day for Day11 {
         floors[2] =  parse_floor(next!(lines), &mut elements);
         assert!(elements.len() <= 5, "expected 5 different elements, found {}", elements.len());
 
-        println!("{elements:?}");
-
         fn solve_helper(
             floors: [Floor; 4],
             floor: usize,
