@@ -104,12 +104,11 @@ impl Day for Day23 {
                     }
                     Instruction::Toggle(reg) => {
                         let offset = regs[reg as usize];
-                        match prog.get_mut((ip + offset as i8) as usize) {
-                            Some(instr @ (_, false)) => {
-                                instr.0 = instr.0.toggle();
-                                instr.1 = true;
-                            }
-                            _ => {}
+                        if let Some(instr @ (_, false)) =
+                            prog.get_mut((ip + offset as i8) as usize)
+                        {
+                            instr.0 = instr.0.toggle();
+                            instr.1 = true;
                         }
                     }
                     _ => {}
