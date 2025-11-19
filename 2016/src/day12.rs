@@ -1,13 +1,50 @@
 use aoc_lib_rust::{next, Day, Example, Solution};
 
 #[derive(Debug, Clone, Copy)]
-enum Instruction {
+pub enum Instruction {
     CpyReg(u8, u8),
-    CpyVal(u8, u8),
+    CpyVal(u16, u8),
     Inc(u8),
     Dec(u8),
     JnzReg(u8, i8),
     JnzVal(u8, i8),
+    Out(u8),
+}
+
+impl Instruction {
+    pub fn from_bytes(bytes: &[u8]) -> Self {
+        let mut parts = bytes.split(|ch| *ch == b' ');
+        match next!(parts) {
+            b"cpy" => {
+                let from = next!(parts);
+                let to = next!(parts)[0] - b'a';
+                if from[0].is_ascii_alphabetic() {
+                    Self::CpyReg(from[0] - b'a', to)
+                } else {
+                    let val = str::from_utf8(from).unwrap().parse().unwrap();
+                    Self::CpyVal(val, to)
+                }
+            }
+            b"inc" => Self::Inc(next!(parts)[0] - b'a'),
+            b"dec" => Self::Dec(next!(parts)[0] - b'a'),
+            b"out" => Self::Out(next!(parts)[0] - b'a'),
+            b"jnz" => {
+                let val = next!(parts);
+                let offset = str::from_utf8(next!(parts)).unwrap().parse().unwrap();
+                if val[0].is_ascii_alphabetic() {
+                    Self::JnzReg(val[0] - b'a', offset)
+                } else {
+                    let val = str::from_utf8(val).unwrap().parse().unwrap();
+                    Self::JnzVal(val, offset)
+                }
+            }
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn parse_prog(input: &str) -> Vec<Self> {
+        input.lines().map(|line| Self::from_bytes(line.as_bytes())).collect()
+    }
 }
 
 pub struct Day12;
@@ -18,34 +55,7 @@ impl Day for Day12 {
     const PART2: Solution = Solution::U32(9227661);
 
     fn solve(input: &str) -> [Solution; 2] {
-        let prog = input.lines().map(|line| {
-            let mut parts = line.as_bytes().split(|ch| *ch == b' ');
-            match next!(parts) {
-                b"cpy" => {
-                    let from = next!(parts);
-                    let to = next!(parts)[0] - b'a';
-                    if from[0].is_ascii_alphabetic() {
-                        Instruction::CpyReg(from[0] - b'a', to)
-                    } else {
-                        let val = str::from_utf8(from).unwrap().parse().unwrap();
-                        Instruction::CpyVal(val, to)
-                    }
-                }
-                b"inc" => Instruction::Inc(next!(parts)[0] - b'a'),
-                b"dec" => Instruction::Dec(next!(parts)[0] - b'a'),
-                b"jnz" => {
-                    let val = next!(parts);
-                    let offset = str::from_utf8(next!(parts)).unwrap().parse().unwrap();
-                    if val[0].is_ascii_alphabetic() {
-                        Instruction::JnzReg(val[0] - b'a', offset)
-                    } else {
-                        let val = str::from_utf8(val).unwrap().parse().unwrap();
-                        Instruction::JnzVal(val, offset)
-                    }
-                }
-                _ => unreachable!(),
-            }
-        }).collect::<Vec<_>>();
+        let prog = Instruction::parse_prog(input);
 
         fn run(prog: &[Instruction], regs: &mut [u32]) {
             let mut ip = 0;

@@ -10,6 +10,6 @@ My solutions for [Advent of Code](https://adventofcode.com/).
 | 2019  |  50 🌟 | Rust          | ❌           |
 | 2018  |  50 🌟 | Rust          | ❌           |
 | 2017  |  50 🌟 | Rust          | ❌           |
-| 2016  |        |               |              |
+| 2016  |  50 🌟 | Rust          | ❌           |
 | 2015  |  24 ⭐ | Prolog        | ❌           |
-| **Total** | 422 ⭐ |           |  4           |
+| **Total** | 471 ⭐ |           |  4           |
