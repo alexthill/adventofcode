@@ -2,6 +2,7 @@ My solutions for [Advent of Code](https://adventofcode.com/).
 
 | Year  | Stars  | Language      | done in Dec  |
 | ----- | ------ | ------------- | ------------ |
+| 2025  |        |               |              |
 | 2024  |  50 🌟 | Python        | ✅           |
 | 2023  |  47 ⭐ | Prolog        | ✅           |
 | 2022  |  50 🌟 | Rust          | ✅           |
