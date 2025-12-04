@@ -146,7 +146,10 @@ where
                 let mut total_time = Duration::default();
                 for day in 1..=25 {
                     flags.day = day;
-                    let res = run_day(flags)?;
+                    let Ok(res) = run_day(flags) else {
+                        eprintln!("\rWarning: running day {day} failed");
+                        break;
+                    };
                     results.push(res);
                     total_time += res.avg();
                 }
