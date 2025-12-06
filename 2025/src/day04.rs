@@ -52,8 +52,7 @@ impl Day for Day04 {
                     continue;
                 }
 
-                let adj = 0
-                    + (map[pos - w - 1] == b'@') as u32
+                let adj = (map[pos - w - 1] == b'@') as u32
                     + (map[pos - w    ] == b'@') as u32
                     + (map[pos - w + 1] == b'@') as u32
                     + (map[pos - 1    ] == b'@') as u32
