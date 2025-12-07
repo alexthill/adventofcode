@@ -15,7 +15,7 @@ impl Day for Day07 {
 
         let mut beams = HashMap::from([(start, 1)]);
         let mut sol1 = 0;
-        while let Some(line) = lines.next() {
+        for line in lines {
             for (i, ch) in line.iter().enumerate() {
                 if *ch == b'^'  {
                     let val = beams.remove(&i).unwrap_or(0);
