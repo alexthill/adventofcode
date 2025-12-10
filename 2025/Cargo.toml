@@ -7,3 +7,4 @@ edition = "2024"
 
 [dependencies]
 aoc_lib_rust = { path = "../aoc_lib_rust" }
+microlp = "0.2.11"
