@@ -15,7 +15,7 @@ impl Day for Day10 {
             let mut parts = line.split(' ');
             let diagram = parts.next().unwrap();
             let diagram = diagram.as_bytes().iter().skip(1).take(diagram.len() - 2)
-                .rfold(0, |acc, x| (acc << 1) | !(*x == b'.') as u16);
+                .rfold(0, |acc, x| (acc << 1) | (*x != b'.') as u16);
 
             let mut buttons = Vec::new();
             let mut counters = Vec::new();
