@@ -21,9 +21,8 @@ impl Day for Day12 {
                 lines.next().unwrap();
                 let mut tile = 0_u16;
                 for _ in 0..3 {
-                    let line = lines.next().unwrap().as_bytes();
-                    for col in 0..3 {
-                        tile = (tile << 1) | (line[col] == b'#') as u16;
+                    for ch in lines.next().unwrap().bytes().take(3) {
+                        tile = (tile << 1) | (ch == b'#') as u16;
                     }
                 }
                 tiles.push(tile);
